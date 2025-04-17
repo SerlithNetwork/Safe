@@ -11,20 +11,8 @@ repositories {
     maven("https://repo.papermc.io/repository/maven-public/") {
         name = "papermc-repo"
     }
-    maven("https://oss.sonatype.org/content/groups/public/") {
-        name = "sonatype"
-    }
     maven("https://nexus.hc.to/content/repositories/pub_releases/") {
         name = "nexus-repo"
-    }
-    maven("https://hub.spigotmc.org/nexus/content/groups/public/") {
-        name = "spigot-repo" // Might be gone soon
-    }
-    maven("https://dev.escapecraft.com/maven/") {
-        name = "escapecraft-repo"
-    }
-    maven("https://repo.codemc.org/repository/maven-public/") {
-        name = "codemc-repo"
     }
 }
 
@@ -71,10 +59,7 @@ tasks.processResources {
     val props = mapOf("version" to version)
     inputs.properties(props)
     filteringCharset = "UTF-8"
-    filesMatching("paper-plugin.yml") {
-        expand(props)
-    }
-    filesMatching("plugin.yml") {
+    filesMatching("*plugin.yml") {
         expand(props)
     }
 }
