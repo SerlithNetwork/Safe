@@ -46,7 +46,7 @@ import javax.annotation.Nullable;
 
 public class Vault extends JavaPlugin {
 
-    private static final String VAULT_BUKKIT_URL = "https://dev.bukkit.org/projects/Vault";
+    private static final String VAULT_BUKKIT_URL = "https://github.com/SerlithNetwork/Safe";
     private static Logger log;
     private String newVersionTitle = "";
     private double newVersion = 0;
