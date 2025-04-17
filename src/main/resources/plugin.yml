@@ -1,12 +1,12 @@
-name: ${project.name}
-version: ${project.version}-b${env.TRAVIS_BUILD_NUMBER}
-description: ${project.description}
-authors: [cereal, Sleaker, mung3r]
-website: ${project.url}
+name: Safe
+version: $version
+main: net.milkbowl.vault.Vault
 api-version: 1.13
-
-main: ${mainClass}
-load: startup
+authors: [cereal, Sleaker, mung3r, Biquaternions]
+description: Drop-in Vault replacement implementing Chat, Permissions and Economy API.
+website: https://serlith.net
+load: STARTUP
+provides: [Vault]
 
 commands:
   vault-info:

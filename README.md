@@ -1,4 +1,12 @@
-# Vault - Abstraction Library for Bukkit - [![Build Status](https://app.travis-ci.com/MilkBowl/Vault.svg?branch=master)](https://app.travis-ci.com/MilkBowl/Vault)
+# Safe - Drop-in Vault replacement
+
+# Ideas
+1. Update API to keep-up with Paper's hard-fork
+2. Remove bloat from chat/permissions plugins that nobody uses nowadays
+3. Check if there's room for improvement
+
+> [!WARNING]
+> Project under SLOW development
 
 ## For Developers:
 Please see the [VaultAPI](https://www.github.com/MilkBowl/VaultAPI) page for

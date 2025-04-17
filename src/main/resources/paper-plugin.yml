@@ -1,0 +1,14 @@
+name: Safe
+version: $version
+main: net.milkbowl.vault.Vault
+api-version: '1.19'
+authors:
+  - cereal
+  - Sleaker
+  - mung3r
+  - Biquaternions
+description: Drop-in Vault replacement implementing Chat, Permissions and Economy API.
+website: https://serlith.net
+load: STARTUP
+provides:
+  - Vault
