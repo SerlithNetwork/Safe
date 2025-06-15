@@ -15,14 +15,10 @@
  */
 package net.milkbowl.vault;
 
-import io.papermc.paper.command.brigadier.Commands;
-import net.milkbowl.vault.command.SafeConvertCommand;
-import net.milkbowl.vault.command.SafeInfoCommand;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.listener.VaultListener;
 import net.milkbowl.vault.permission.Permission;
-
 import net.milkbowl.vault.tasks.UpdateFetcherTask;
 import net.milkbowl.vault.types.VersionInfo;
 import org.bstats.bukkit.Metrics;
@@ -30,16 +26,22 @@ import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
+import java.util.Collection;
 
 public class Vault extends JavaPlugin {
 
     private final VersionInfo versionInfo = new VersionInfo(0, "", 0, "");
 
+    private static Vault INSTANCE;
+    public static Vault getInstance() {
+        return INSTANCE;
+    }
+
     @Override
     public void onLoad() {
-        Commands.literal("");
+        INSTANCE = this;
     }
 
     @Override
@@ -61,8 +63,6 @@ public class Vault extends JavaPlugin {
         saveConfig();
 
         getServer().getPluginManager().registerEvents(new VaultListener(this.versionInfo), this);
-        new SafeInfoCommand(this);
-        new SafeConvertCommand(this);
 
         // Schedule to check the version every 24 hours for an update. This is to update the most recent
         // version so if an admin reconnects they will be warned about newer versions.
@@ -101,6 +101,15 @@ public class Vault extends JavaPlugin {
         }
         final String chatName = chat != null ? chat.getName() : "No Chat";
         metrics.addCustomChart(new SimplePie("chat", () -> chatName));
+    }
+
+    @SuppressWarnings("deprecation")
+    public Collection<RegisteredServiceProvider<Economy>> getLegacyEconomyProviders() {
+        return this.getServer().getServicesManager().getRegistrations(Economy.class);
+    }
+
+    public Collection<RegisteredServiceProvider<net.milkbowl.vault2.economy.Economy>> getModernEconomyProviders() {
+        return this.getServer().getServicesManager().getRegistrations(net.milkbowl.vault2.economy.Economy.class);
     }
 
 }
