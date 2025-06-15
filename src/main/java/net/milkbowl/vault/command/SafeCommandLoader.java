@@ -26,7 +26,7 @@ public class SafeCommandLoader {
 
     @SuppressWarnings("deprecation")
     public LiteralCommandNode<CommandSourceStack> buildInfoCommand() {
-        return Commands.literal("safe-info")
+        return Commands.literal("vault-info")
                 .requires(s -> s.getSender().hasPermission("vault.admin"))
                 .executes(ctx -> {
                     CommandSender sender = ctx.getSource().getSender();
@@ -160,7 +160,7 @@ public class SafeCommandLoader {
         });
 
 
-        return Commands.literal("safe-convert")
+        return Commands.literal("vault-convert")
                 .requires(s -> s.getSender().hasPermission("vault.admin"))
                 .then(Commands.argument("source", StringArgumentType.word())
                         .suggests(economySuggestion)
