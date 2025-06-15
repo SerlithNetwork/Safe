@@ -29,14 +29,14 @@ public class UpdateFetcherTask extends BukkitRunnable {
     @Override
     public void run() {
         // Paper now handles this permission properly
-        if (this.plugin.getServer().getConsoleSender().hasPermission("vault.update") && this.plugin.getConfig().getBoolean("update-check", true)) {
+        if (this.plugin.getConfig().getBoolean("update-check", true)) {
             try {
                 this.logger.info("Checking for Updates ... ");
                 double currentVersion = this.versionInfo.getCurrentVersion();
                 double newVersion = updateCheck(currentVersion);
                 if (newVersion > currentVersion) {
                     this.logger.warning("Stable Version: " + this.versionInfo.getNewVersionTitle() + " is out!" + " You are still running version: " + this.versionInfo.getCurrentVersionTitle());
-                    this.logger.warning("Update at: https://dev.bukkit.org/projects/vault");
+                    this.logger.warning("Update at: https://github.com/SerlithNetwork/Safe");
                 } else if (currentVersion > newVersion) {
                     this.logger.info("Stable Version: " + this.versionInfo.getNewVersionTitle() + " | Current Version: " + this.versionInfo.getCurrentVersionTitle());
                 }
