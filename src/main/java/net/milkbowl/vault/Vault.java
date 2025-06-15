@@ -52,7 +52,6 @@ public class Vault extends JavaPlugin {
     private double newVersion = 0;
     private double currentVersion = 0;
     private String currentVersionTitle = "";
-    private Vault plugin;
 
     @Override
     public void onDisable() {
@@ -64,13 +63,12 @@ public class Vault extends JavaPlugin {
     @Override
     @SuppressWarnings("UnstableApiUsage")
     public void onEnable() {
-        plugin = this;
         log = this.getLogger();
         currentVersionTitle = this.getPluginMeta().getVersion();
         currentVersion = Double.parseDouble(currentVersionTitle.replaceFirst("\\.", ""));
 
         // set defaults
-        getConfig().addDefault("update-check", true);
+        getConfig().addDefault("update-check", false);
         getConfig().options().copyDefaults(true);
         saveConfig();
 
@@ -87,11 +85,11 @@ public class Vault extends JavaPlugin {
             {
                 perm = new org.bukkit.permissions.Permission("vault.update");
                 perm.setDefault(PermissionDefault.OP);
-                plugin.getServer().getPluginManager().addPermission(perm);
+                this.getServer().getPluginManager().addPermission(perm);
             }
             perm.setDescription("Allows a user or the console to check for vault updates");
 
-            getServer().getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+            getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
                 if (getServer().getConsoleSender().hasPermission("vault.update") && getConfig().getBoolean("update-check", true)) {
                     try {
                         log.info("Checking for Updates ... ");

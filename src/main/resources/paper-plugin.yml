@@ -7,8 +7,10 @@ authors:
   - Sleaker
   - mung3r
   - Biquaternions
+  - creatorfromhell
 description: Drop-in Vault replacement implementing Chat, Permissions and Economy API.
 website: https://serlith.net
 load: STARTUP
 provides:
   - Vault
+  - VaultUnlocked

@@ -4,12 +4,13 @@
 1. Update API to keep-up with Paper's hard-fork
 2. Remove bloat from chat/permissions plugins that nobody uses nowadays
 3. Check if there's room for improvement
+4. Migrate commands to Brigadier
 
 > [!WARNING]
 > Project under SLOW development
 
 ## For Developers:
-Please see the [VaultAPI](https://www.github.com/MilkBowl/VaultAPI) page for
+Please see the [VaultUnlockedAPI](https://github.com/TheNewEconomy/VaultUnlockedAPI) page for
 information on developing with Vault's API. In the past, you would use the same
 artifact as servers installed, but the API has now been split from the main
 project and is under a different artifact name. Please make sure you accommodate
