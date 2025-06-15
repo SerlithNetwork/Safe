@@ -15,6 +15,8 @@
  */
 package net.milkbowl.vault;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.listener.VaultListener;
@@ -39,9 +41,15 @@ public class Vault extends JavaPlugin {
         return INSTANCE;
     }
 
+    private static Component PREFIX;
+    public static Component getPrefix() {
+        return PREFIX;
+    }
+
     @Override
     public void onLoad() {
         INSTANCE = this;
+        PREFIX = MiniMessage.miniMessage().deserialize("<#919191>[<gradient:#6314ff:#14b9ff>" + this.getName() + "</gradient>]</#919191> ");
     }
 
     @Override

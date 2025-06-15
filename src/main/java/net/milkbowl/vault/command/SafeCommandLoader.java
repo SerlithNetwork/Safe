@@ -7,6 +7,12 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import lombok.experimental.UtilityClass;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
@@ -17,12 +23,18 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @UtilityClass
 @SuppressWarnings("UnstableApiUsage")
 public class SafeCommandLoader {
+
+    private static final TextColor COLOR_VALID = TextColor.color(77, 255, 190);
+    private static final TextColor COLOR_INVALID = TextColor.color(255, 163, 163);
+    private static final TextColor COLOR_COMMA = TextColor.color(173, 173, 173);
 
     @SuppressWarnings("deprecation")
     public LiteralCommandNode<CommandSourceStack> buildInfoCommand() {
@@ -131,15 +143,35 @@ public class SafeCommandLoader {
                         chat2 = rspc2.getProvider();
                     }
 
+                    MiniMessage miniMessage = MiniMessage.builder()
+                            .tags(TagResolver.builder()
+                                    .resolver(StandardTags.color())
+                                    .resolver(Placeholder.unparsed("version", Vault.getInstance().getPluginMeta().getVersion()))
+                                    .resolver(Placeholder.unparsed("eln", econ == null ? "None" : econ.getName()))
+                                    .resolver(Placeholder.unparsed("emn", econ2 == null ? "None" : econ2.getName()))
+                                    .resolver(Placeholder.unparsed("pln", perm == null ? "None" : perm.getName()))
+                                    .resolver(Placeholder.unparsed("pmn", perm2 == null ? "None" : perm2.getName()))
+                                    .resolver(Placeholder.unparsed("cln", chat == null ? "None" : chat.getName()))
+                                    .resolver(Placeholder.unparsed("cmn", chat2 == null ? "None" : chat2.getName()))
+                                    .resolver(Placeholder.unparsed("ela", registeredEcons == null ? "None" : registeredEcons.toString()))
+                                    .resolver(Placeholder.unparsed("ema", registeredModernEcons.isEmpty() ? "None" : registeredModernEcons.toString()))
+                                    .resolver(Placeholder.unparsed("pla", registeredPerms == null ? "None" : registeredPerms.toString()))
+                                    .resolver(Placeholder.unparsed("pma", registeredModernPerms.isEmpty() ? "None" : registeredModernPerms.toString()))
+                                    .resolver(Placeholder.unparsed("cla", registeredChats == null ? "None" : registeredChats.toString()))
+                                    .resolver(Placeholder.unparsed("cma", registeredModernChats.isEmpty() ? "None" : registeredModernChats.toString()))
+                                    .build()
+                            ).build();
 
                     // Send user some info!
-                    sender.sendMessage(String.format("[%s] Safe v%s Information", Vault.getInstance().getName(), Vault.getInstance().getPluginMeta().getVersion()));
-                    sender.sendMessage(String.format("[%s] Economy Legacy: %s [%s]", Vault.getInstance().getName(), econ == null ? "None" : econ.getName(), registeredEcons == null ? "None" : registeredEcons.toString()));
-                    sender.sendMessage(String.format("[%s] Economy Modern: %s [%s]", Vault.getInstance().getName(), econ2 == null ? "None" : econ2.getName(), registeredModernEcons.isEmpty() ? "None" : registeredModernEcons.toString()));
-                    sender.sendMessage(String.format("[%s] Permission Legacy: %s [%s]", Vault.getInstance().getName(), perm == null ? "None" : perm.getName(), registeredPerms == null ? "None" : registeredPerms.toString()));
-                    sender.sendMessage(String.format("[%s] Permission Modern: %s [%s]", Vault.getInstance().getName(), perm2 == null ? "None" : perm2.getName(), registeredModernPerms.isEmpty() ? "None" : registeredModernPerms.toString()));
-                    sender.sendMessage(String.format("[%s] Chat Legacy: %s [%s]", Vault.getInstance().getName(), chat == null ? "None" : chat.getName(), registeredChats == null ? "None" : registeredChats.toString()));
-                    sender.sendMessage(String.format("[%s] Chat Modern: %s [%s]", Vault.getInstance().getName(), chat2 == null ? "None" : chat2.getName(), registeredModernChats.isEmpty() ? "None" : registeredModernChats.toString()));
+                    List.of(
+                            Vault.getPrefix().append(miniMessage.deserialize("Safe v<version> Information")),
+                            Vault.getPrefix().append(miniMessage.deserialize("Economy <#ffa3a3>Legacy</#ffa3a3>: <#4dffbe><eln></#4dffbe> [<#adadad><ela></#adadad>]")),
+                            Vault.getPrefix().append(miniMessage.deserialize("Economy <#a3f6ff>Modern</#a3f6ff>: <#4dffbe><emn></#4dffbe> [<#adadad><ema></#adadad>]")),
+                            Vault.getPrefix().append(miniMessage.deserialize("Permission <#ffa3a3>Legacy</#ffa3a3>: <#4dffbe><pln></#4dffbe> [<#adadad><pla></#adadad>]")),
+                            Vault.getPrefix().append(miniMessage.deserialize("Permission <#a3f6ff>Modern</#a3f6ff>: <#4dffbe><pmn></#4dffbe> [<#adadad><pma></#adadad>]")),
+                            Vault.getPrefix().append(miniMessage.deserialize("Chat <#ffa3a3>Legacy</#ffa3a3>: <#4dffbe><cln></#4dffbe> [<#adadad><cla></#adadad>]")),
+                            Vault.getPrefix().append(miniMessage.deserialize("Chat <#a3f6ff>Modern</#a3f6ff>: <#4dffbe><cmn></#4dffbe> [<#adadad><cma></#adadad>]"))
+                    ).forEach(sender::sendMessage);
 
                     return Command.SINGLE_SUCCESS;
                 })
@@ -172,12 +204,19 @@ public class SafeCommandLoader {
                                     String econ1Name = ctx.getArgument("source", String.class);
                                     String econ2Name = ctx.getArgument("target", String.class);
 
+                                    if (econ1Name.equalsIgnoreCase(econ2Name)) {
+                                        sender.sendMessage(Vault.getPrefix().append(Component.text("You can't convert a economy into itself")));
+                                        return Command.SINGLE_SUCCESS;
+                                    }
+
                                     Economy econ1 = null;
                                     Economy econ2 = null;
                                     net.milkbowl.vault2.economy.Economy econ1Unlocked = null;
                                     net.milkbowl.vault2.economy.Economy econ2Unlocked = null;
 
-                                    final StringBuilder economies = new StringBuilder();
+                                    final List<String> ecos = new ArrayList<>();
+                                    final Component empty = Component.empty();
+                                    Component economies = empty;
                                     for (RegisteredServiceProvider<Economy> e : Vault.getInstance().getLegacyEconomyProviders()) {
                                         String economyName = e.getProvider().getName();
                                         if (economyName.equalsIgnoreCase(econ1Name)) {
@@ -186,10 +225,12 @@ public class SafeCommandLoader {
                                             econ2 = e.getProvider();
                                         }
 
-                                        if (!economies.isEmpty()) {
-                                            economies.append(", ");
+                                        if (ecos.contains(economyName)) continue;
+                                        if (economies != empty) {
+                                            economies = economies.append(Component.text(", ", COLOR_COMMA));
                                         }
-                                        economies.append(economyName);
+                                        economies = economies.append(Component.text(economyName, COLOR_VALID));
+                                        ecos.add(economyName);
                                     }
                                     for (RegisteredServiceProvider<net.milkbowl.vault2.economy.Economy> e : Vault.getInstance().getModernEconomyProviders()) {
                                         String economyName = e.getProvider().getName();
@@ -199,24 +240,30 @@ public class SafeCommandLoader {
                                             econ2Unlocked = e.getProvider();
                                         }
 
-                                        if (!economies.isEmpty()) {
-                                            economies.append(", ");
+                                        if (ecos.contains(economyName)) continue;
+                                        if (economies != empty) {
+                                            economies = economies.append(Component.text(", ", COLOR_COMMA));
                                         }
-                                        economies.append(economyName);
+                                        economies = economies.append(Component.text(economyName, COLOR_VALID));
+                                        ecos.add(economyName);
                                     }
 
                                     if (econ1 == null && econ1Unlocked == null) {
-                                        sender.sendMessage("Could not find " + econ1Name + " loaded on the server, check your spelling.");
-                                        sender.sendMessage("Valid economies are: " + economies);
+                                        List.of(
+                                                Vault.getPrefix().append(Component.text("Could not find ")).append(Component.text(econ1Name, COLOR_INVALID)).append(Component.text(" loaded on the server, check your spelling.")),
+                                                Vault.getPrefix().append(Component.text("Valid economies are: ")).append(economies)
+                                        ).forEach(sender::sendMessage);
                                         return Command.SINGLE_SUCCESS;
                                     } else if (econ2 == null && econ2Unlocked == null) {
-                                        sender.sendMessage("Could not find " + econ2Name + " loaded on the server, check your spelling.");
-                                        sender.sendMessage("Valid economies are: " + economies);
+                                        List.of(
+                                                Vault.getPrefix().append(Component.text("Could not find ")).append(Component.text(econ2Name, COLOR_INVALID)).append(Component.text(" loaded on the server, check your spelling.")),
+                                                Vault.getPrefix().append(Component.text("Valid economies are: ")).append(economies)
+                                        ).forEach(sender::sendMessage);
                                         return Command.SINGLE_SUCCESS;
                                     }
 
 
-                                    sender.sendMessage("This may take some time to convert, expect server lag.");
+                                    sender.sendMessage(Vault.getPrefix().append(Component.text("This may take some time to convert, expect server lag.")));
                                     final boolean useUnlocked1 = (econ1Unlocked != null);
                                     final boolean useUnlocked2 = (econ2Unlocked != null);
                                     final String pluginID = "vault conversion";
@@ -272,7 +319,7 @@ public class SafeCommandLoader {
                                             }
                                         }
                                     }
-                                    sender.sendMessage("Conversion complete, please verify the data before using it.");
+                                    sender.sendMessage(Vault.getPrefix().append(Component.text("Conversion complete, please verify the data before using it.")));
 
 
                                     return Command.SINGLE_SUCCESS;
