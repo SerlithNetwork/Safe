@@ -1,4 +1,4 @@
-# Safe - Drop-in Vault replacement
+# Safe - Drop-in Vault replacement (1.20.6+)
 
 # Ideas
 1. Update API to keep-up with Paper's hard-fork
@@ -8,6 +8,10 @@
 
 > [!WARNING]
 > Project under SLOW development
+
+## Credits
+Please, don't forget to check [VaultUnlocked](https://github.com/TheNewEconomy/VaultUnlockedAPI). \
+This project now implements its API, rather than legacy Vault's.
 
 ## For Developers:
 Please see the [VaultUnlockedAPI](https://github.com/TheNewEconomy/VaultUnlockedAPI) page for
