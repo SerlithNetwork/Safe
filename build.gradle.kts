@@ -1,6 +1,7 @@
 plugins {
     java
     id("com.gradleup.shadow") version "8.3.0"
+    id("io.freefair.lombok") version "8.13.1"
 }
 
 group = "net.milkbowl.vault"
@@ -20,13 +21,13 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
 
     implementation("org.bstats:bstats-bukkit:3.0.2")
     implementation("net.milkbowl.vault:VaultUnlockedAPI:2.11")
 }
 
-val targetJavaVersion = 17
+val targetJavaVersion = 21
 java {
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion

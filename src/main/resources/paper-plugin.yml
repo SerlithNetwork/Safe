@@ -1,7 +1,7 @@
 name: Safe
 version: $version
 main: net.milkbowl.vault.Vault
-api-version: '1.19'
+api-version: '1.20'
 authors:
   - cereal
   - Sleaker
