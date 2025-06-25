@@ -51,7 +51,7 @@ jobs:
         uses: softprops/action-gh-release@master
         with:
           name: "🔐 Safe build ${{ env.BUILD_NUMBER }}"
-          tag_name: "ver-2.0"
+          tag_name: "ver-1.7"
           files: |
             ./build/libs/Safe-1.7.3.jar
           body_path: "./RELEASE.md"
