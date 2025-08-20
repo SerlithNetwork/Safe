@@ -21,12 +21,15 @@ import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.listener.VaultListener;
 import net.milkbowl.vault.permission.Permission;
+import net.milkbowl.vault.permission.plugins.Permission_SuperPerms;
 import net.milkbowl.vault.tasks.UpdateFetcherTask;
 import net.milkbowl.vault.types.VersionInfo;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.ServicePriority;
+import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +38,7 @@ import java.util.Collection;
 public class Vault extends JavaPlugin {
 
     private final VersionInfo versionInfo = new VersionInfo(0, "", 0, "");
+    private ServicesManager servicesManager;
 
     private static Vault INSTANCE;
     public static Vault getInstance() {
@@ -60,17 +64,20 @@ public class Vault extends JavaPlugin {
     }
 
     @Override
-    @SuppressWarnings("UnstableApiUsage")
+    @SuppressWarnings({"UnstableApiUsage", "deprecation"})
     public void onEnable() {
         this.versionInfo.setCurrentVersionTitle(this.getPluginMeta().getVersion());
         this.versionInfo.setCurrentVersion(Double.parseDouble(this.versionInfo.getCurrentVersionTitle().replaceFirst("\\.", "")));
 
         // set defaults
-        getConfig().addDefault("update-check", false);
-        getConfig().options().copyDefaults(true);
-        saveConfig();
+        this.getConfig().addDefault("update-check", false);
+        this.getConfig().options().copyDefaults(true);
+        this.saveConfig();
 
-        getServer().getPluginManager().registerEvents(new VaultListener(this.versionInfo), this);
+        this.servicesManager = Bukkit.getServer().getServicesManager();
+        this.servicesManager.register(Permission.class, new Permission_SuperPerms(this), this, ServicePriority.Lowest);
+
+        this.getServer().getPluginManager().registerEvents(new VaultListener(this.versionInfo), this);
 
         // Schedule to check the version every 24 hours for an update. This is to update the most recent
         // version so if an admin reconnects they will be warned about newer versions.
@@ -78,7 +85,7 @@ public class Vault extends JavaPlugin {
 
         // Load up the Plugin metrics
         Metrics metrics = new Metrics(this, 887);
-        findCustomData(metrics);
+        this.findCustomData(metrics);
 
         this.getLogger().info(String.format("Enabled Version %s", this.getPluginMeta().getVersion()));
     }
@@ -86,7 +93,7 @@ public class Vault extends JavaPlugin {
     @SuppressWarnings("deprecation")
     private void findCustomData(Metrics metrics) {
         // Create our Economy Graph and Add our Economy plotters
-        RegisteredServiceProvider<Economy> rspEcon = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
+        RegisteredServiceProvider<Economy> rspEcon = this.servicesManager.getRegistration(Economy.class);
         Economy econ = null;
         if (rspEcon != null) {
             econ = rspEcon.getProvider();
@@ -95,14 +102,14 @@ public class Vault extends JavaPlugin {
         metrics.addCustomChart(new SimplePie("economy", () -> econName));
 
         // Create our Permission Graph and Add our permission Plotters
-        final @Nullable RegisteredServiceProvider<Permission> registeredPermission = Bukkit.getServer().getServicesManager().getRegistration(Permission.class);
+        final @Nullable RegisteredServiceProvider<Permission> registeredPermission = this.servicesManager.getRegistration(Permission.class);
         if (registeredPermission != null) {
             final String permName = registeredPermission.getProvider().getName();
             metrics.addCustomChart(new SimplePie("permission", () -> permName));
         }
 
         // Create our Chat Graph and Add our chat Plotters
-        RegisteredServiceProvider<Chat> rspChat = Bukkit.getServer().getServicesManager().getRegistration(Chat.class);
+        RegisteredServiceProvider<Chat> rspChat = this.servicesManager.getRegistration(Chat.class);
         Chat chat = null;
         if (rspChat != null) {
             chat = rspChat.getProvider();
