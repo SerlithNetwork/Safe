@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-CURRENT_TAG="ver-2.0"
+CURRENT_TAG="ver-1.7.3"
 RELEASE_NOTES="RELEASE.md"
 
 # Branch name
